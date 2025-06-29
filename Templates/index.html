@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nmap Web Scanner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to right, #0f0c29, #302b63, #24243e);
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background: #1e0033;
+            padding: 30px;
+            text-align: center;
+            color: #ffffff;
+        }
+        .container {
+            background: #121212;
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.6);
+        }
+        label {
+            font-weight: bold;
+            margin-top: 15px;
+            display: block;
+        }
+        input[type=text] {
+            width: 100%;
+            padding: 12px;
+            margin-top: 6px;
+            margin-bottom: 16px;
+            border-radius: 6px;
+            border: 1px solid #555;
+            background-color: #2d2d44;
+            color: #e0e0e0;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(to right, #6a0572, #ab83a1);
+            color: white;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background: linear-gradient(to right, #430248, #9256a2);
+        }
+        textarea {
+            width: 100%;
+            height: 300px;
+            margin-top: 20px;
+            padding: 12px;
+            background: #1a1a2e;
+            color: #dcdcdc;
+            font-family: monospace;
+            border-radius: 6px;
+            border: 1px solid #444;
+            resize: vertical;
+        }
+        .meta {
+            font-size: 0.95rem;
+            margin: 10px 0;
+            color: #9be7ff;
+        }
+        .error {
+            color: #ff6b6b;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .about {
+            margin-top: 40px;
+            background: #2c2c3c;
+            padding: 20px;
+            border-radius: 10px;
+            color: #ccc;
+        }
+        .about h3 {
+            margin-top: 0;
+            color: #f2c1ff;
+        }
+        a {
+            color: #9be7ff;
+            text-decoration: none;
+        }
+        #clock-corner {
+            position: fixed;
+            left: 10px;
+            bottom: 10px;
+            background: #222;
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 1.1em;
+            z-index: 1000;
+            opacity: 0.85;
+        }
+        /* Loading overlay styles */
+        #loading-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(20,20,40,0.85);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #loading-box {
+            background: #23234a;
+            padding: 40px 60px;
+            border-radius: 18px;
+            box-shadow: 0 0 24px #0008;
+            text-align: center;
+        }
+        .loader {
+            border: 8px solid #eee;
+            border-top: 8px solid #ab83a1;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 18px auto;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg);}
+            100% { transform: rotate(360deg);}
+        }
+        #loading-text {
+            color: #fff;
+            font-size: 1.3em;
+            margin-top: 10px;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔍 Nmap Web Scanner</h1>
+        <p>Flask-based Port Scanner with Report Logging</p>
+    </div>
+
+    <div class="container">
+        <form method="POST" autocomplete="off" id="scan-form">
+            <label for="ip">Target IP or Hostname:</label>
+            <input type="text" name="ip" id="ip" placeholder="e.g. 192.168.1.1 or scanme.nmap.org" required value="{{ request.form.ip if request.method == 'POST' else '' }}">
+
+            <label for="ports">Port Range:</label>
+            <input type="text" name="ports" id="ports" placeholder="e.g. 1-1024, 80,443" value="{{ request.form.ports if request.method == 'POST' else '1-1024' }}" required>
+
+            <button type="submit">🚀 Start Scan</button>
+        </form>
+        <!-- Loading overlay -->
+        <div id="loading-overlay" style="display:none;">
+            <div id="loading-box">
+                <div class="loader"></div>
+                <div id="loading-text">Scanning... <span id="loading-percent">0%</span></div>
+            </div>
+        </div>
+
+        {% if output %}
+            <h3 style="margin-top: 28px;">Scan Result:</h3>
+            {% if "Invalid" in output or "Error" in output or "unreachable" in output %}
+                <div class="error">{{ output }}</div>
+            {% else %}
+                {% if report_filename %}
+                    <div class="meta">📁 Report saved as: <b>{{ report_filename }}</b></div>
+                    <div class="meta">🕒 Scan Time: {{ timestamp }}</div>
+                    <div style="display: flex; gap: 18px; margin: 18px 0;">
+                        <a href="{{ url_for('download_report', filename=report_filename) }}" style="flex:1;">
+                            <button type="button" style="width:100%;">⬇️ Export Result</button>
+                        </a>
+                        <button type="button" onclick="copyResult()" style="flex:1;">📋 Copy Result</button>
+                        <a href="{{ url_for('history') }}" style="flex:1;">
+                            <button type="button" style="width:100%;">🕑 View Scan History</button>
+                        </a>
+                    </div>
+                {% endif %}
+            {% endif %}
+            <textarea id="scan-result" readonly>{{ output }}</textarea>
+        {% endif %}
+
+        <div class="about">
+            <h3>📘 About This Project</h3>
+            <p>
+                This project is a <strong>web-based Nmap port scanner</strong> built using <b>Flask</b> and <b>Python-nmap</b>. 
+                It allows users to input an IP address or hostname and scan for open ports across a defined range.
+                The results are displayed in an interactive web interface and optionally saved with timestamps for reporting purposes.
+            </p>
+        </div>
+    </div>
+    <div id="clock-corner"></div>
+    <script>
+    function updateClock() {
+        const now = new Date();
+        let hours = now.getHours();
+        let minutes = now.getMinutes();
+        let seconds = now.getSeconds();
+        let ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // 0 should be 12
+        let strTime = [
+            hours.toString().padStart(2, '0'),
+            minutes.toString().padStart(2, '0'),
+            seconds.toString().padStart(2, '0')
+        ].join(':') + ' ' + ampm;
+        let strDate = now.getFullYear() + '-' +
+            (now.getMonth() + 1).toString().padStart(2, '0') + '-' +
+            now.getDate().toString().padStart(2, '0');
+        document.getElementById('clock-corner').textContent = strDate + ' ' + strTime;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    function copyResult() {
+        var textarea = document.getElementById('scan-result');
+        if (textarea) {
+            textarea.select();
+            document.execCommand('copy');
+            alert('Scan result copied to clipboard!');
+        }
+    }
+
+    // Loading animation logic
+    let loadingInterval = null;
+    function showLoading() {
+        document.getElementById('loading-overlay').style.display = 'flex';
+        let percent = 0;
+        document.getElementById('loading-percent').textContent = '0%';
+        loadingInterval = setInterval(function() {
+            percent += Math.floor(Math.random() * 7) + 2; // random increment
+            if (percent > 97) percent = 97; // don't reach 100% until scan done
+            document.getElementById('loading-percent').textContent = percent + '%';
+        }, 200);
+    }
+    function hideLoading() {
+        if (loadingInterval) clearInterval(loadingInterval);
+        document.getElementById('loading-percent').textContent = '100%';
+        setTimeout(function() {
+            document.getElementById('loading-overlay').style.display = 'none';
+        }, 350);
+    }
+
+    document.getElementById('scan-form').addEventListener('submit', function() {
+        showLoading();
+    });
+
+    window.addEventListener('DOMContentLoaded', function() {
+        // Hide loading if result is present (page reloaded after scan)
+        {% if output %}
+            hideLoading();
+        {% endif %}
+    });
+    </script>
+</body>
+</html>

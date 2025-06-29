@@ -1,0 +1,4 @@
+TCP 135: open (msrpc)
+TCP 137: filtered (netbios-ns)
+TCP 139: open (netbios-ssn)
+TCP 445: open (microsoft-ds)

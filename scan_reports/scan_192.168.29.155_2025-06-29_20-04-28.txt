@@ -1,0 +1,8 @@
+Scan report for 192.168.29.155
+Host State: up
+
+Protocol: TCP
+Port 135: open (msrpc Microsoft Windows RPC)
+Port 137: filtered (netbios-ns)
+Port 139: open (netbios-ssn Microsoft Windows netbios-ssn)
+Port 445: open (microsoft-ds)

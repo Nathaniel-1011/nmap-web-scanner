@@ -1,0 +1,145 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #000000;
+    color: #e0e0e0;
+    min-height: 100vh;
+    padding-bottom: 40px;
+}
+
+.header {
+    text-align: center;
+    padding: 40px 20px 10px;
+    background-color: #000000;
+}
+
+.typing {
+    display: inline-block;
+    border-right: 3px solid #ba7fff;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 0;
+    animation: typing 4s steps(40, end) forwards, blink 0.7s infinite;
+    color: #ba7fff;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+@keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+}
+
+@keyframes blink {
+    0%, 100% { border-color: transparent }
+    50% { border-color: #ba7fff }
+}
+
+.container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 30px;
+    background-color: #000000;
+}
+
+label {
+    font-weight: bold;
+    margin-top: 20px;
+    display: block;
+    color: #d6b3ff;
+}
+
+input[type=text] {
+    width: 100%;
+    padding: 12px;
+    margin-top: 6px;
+    margin-bottom: 16px;
+    border-radius: 6px;
+    border: 1px solid #5a008a;
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(to right, #7f00ff, #e100ff);
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    margin-top: 10px;
+}
+
+button:hover {
+    background: linear-gradient(to right, #4a0072, #9000a1);
+}
+
+.loading-bar {
+    width: 100%;
+    height: 6px;
+    background: #333;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 20px;
+    display: none;
+}
+
+.loading-bar .fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(to right, #7f00ff, #e100ff);
+    animation: loading 3s linear infinite;
+}
+
+@keyframes loading {
+    0% { width: 0% }
+    100% { width: 100% }
+}
+
+textarea {
+    width: 100%;
+    height: 300px;
+    margin-top: 20px;
+    padding: 12px;
+    background: #0d0d0d;
+    color: #f2f2f2;
+    font-family: monospace;
+    border-radius: 6px;
+    border: 1px solid #5a008a;
+    resize: vertical;
+}
+
+.meta {
+    font-size: 0.95rem;
+    margin: 10px 0;
+    color: #ba7fff;
+}
+
+.error {
+    color: #ff6b6b;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.about {
+    margin-top: 40px;
+    background: #0d0d0d;
+    padding: 20px;
+    border-radius: 10px;
+    color: #ccc;
+    border: 1px solid #292929;
+}
+
+.about h3 {
+    margin-top: 0;
+    color: #f2c1ff;
+}
