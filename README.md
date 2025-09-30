@@ -1,11 +1,11 @@
-# 🔍 Nmap Web Scanner (Flask-based)
+#  Nmap Web Scanner (Flask-based)
 
 A professional web-based network scanner built with Python, Flask, and Nmap.  
 Easily scan IP addresses and port ranges, view detailed results in your browser, and manage scan history with downloadable reports.
 
 ---
 
-## 🚀 Features
+# Features
 
 
 SYN scan (-sS) with service & version detection (-sV)
@@ -20,7 +20,7 @@ Download and clipboard copy functionality in browser
 
 ---
 
-## 🛠 Technologies Used
+# Technologies Used
 
 - Python 3.x
 - Flask
@@ -30,20 +30,20 @@ Download and clipboard copy functionality in browser
 
 ---
 
-🌐 Frontend
+Frontend
 Built with HTML and CSS (using Flask’s Jinja2 templating)
 
 Simple form for input (target IP and port range)
 
 Displays scan results and download link
 
-📁 Files:
+Files:
 
 Templates/index.html
 
 Static/style.css
 
-🧠 Backend
+Backend
 Flask (Python web framework)
 
 Handles routes and form submissions
@@ -52,12 +52,12 @@ Uses python-nmap to run and parse Nmap scans
 
 Saves scan reports with timestamps in /reports/
 
-📁 File:
+File:
 
 app.py
 File: app.py
 
-## 📦 Installation
+Installation
 
 ### 1. Clone the repository
 ```bash
@@ -90,10 +90,11 @@ Visit [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser.
 
 ---
 
-## 🛡️ Disclaimer
+Disclaimer
 
 This tool is intended for educational and authorized network security testing only.  
 Do not scan networks or systems without proper permission.
+
 
 
 
